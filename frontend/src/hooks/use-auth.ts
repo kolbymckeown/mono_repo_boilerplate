@@ -7,6 +7,9 @@ import {
 	onAuthStateChanged,
 	User,
 } from "firebase/auth";
+import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/slices/user.slice";
 
 type AuthHook = {
 	signInWithEmailAndPassword: (
@@ -18,25 +21,25 @@ type AuthHook = {
 		password: string
 	) => Promise<void>;
 	logout: () => Promise<void>;
-	user: User | null;
 };
 
 const useAuth = (): AuthHook => {
-	const [user, setUser] = useState<User | null>(null);
+	const router = useRouter();
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			if (user) {
-				setUser(user);
+				dispatch(setUser({ email: user.email, uid: user.uid }));
 			} else {
-				setUser(null);
+				dispatch(setUser({ email: null, uid: null }));
 			}
 		});
 
 		return () => {
 			unsubscribe();
 		};
-	}, []);
+	}, [dispatch]);
 
 	const signInWithEmailAndPassword = async (
 		email: string,
@@ -44,6 +47,7 @@ const useAuth = (): AuthHook => {
 	) => {
 		try {
 			await signIn(auth, email, password);
+			router.push("/");
 		} catch (error) {
 			console.error("Error signing in with email and password", error);
 			throw error;
@@ -56,6 +60,7 @@ const useAuth = (): AuthHook => {
 	) => {
 		try {
 			await createUser(auth, email, password);
+			router.push("/");
 		} catch (error) {
 			console.error("Error creating account with email and password", error);
 			throw error;
@@ -75,7 +80,6 @@ const useAuth = (): AuthHook => {
 		signInWithEmailAndPassword,
 		createAccountWithEmailAndPassword,
 		logout,
-		user,
 	};
 };
 

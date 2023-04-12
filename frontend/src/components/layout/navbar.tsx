@@ -19,6 +19,11 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { AiOutlineClose } from "react-icons/ai";
 import { BiChevronDown } from "react-icons/bi";
 import { RiFlashlightFill } from "react-icons/ri";
+import { selectUser } from "@/redux/slices/user.slice";
+import NextLink from "next/link";
+
+import { useSelector } from "react-redux";
+import useAuth from "@/hooks/use-auth";
 
 const navLinks = [
 	{ name: "About", path: "#" },
@@ -43,6 +48,8 @@ const dropdownLinks = [
 
 export default function Navbar() {
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const user = useSelector(selectUser);
+	const { logout } = useAuth();
 
 	return (
 		<Box px={4} bg={useColorModeValue("white", "black")}>
@@ -103,18 +110,53 @@ export default function Navbar() {
 						</Menu>
 					</HStack>
 				</HStack>
-				<Button
-					bg="accent.500"
-					color="white"
-					size="md"
-					rounded="md"
-					display={{ base: "none", md: "block" }}
-					_hover={{
-						bg: "accent.700",
-					}}
-				>
-					Sign in
-				</Button>
+				{user.email ? (
+					<Button
+						bg="accent.500"
+						color="white"
+						size="md"
+						rounded="md"
+						display={{ base: "none", md: "block" }}
+						_hover={{
+							bg: "accent.700",
+						}}
+						onClick={logout}
+					>
+						Sign out
+					</Button>
+				) : (
+					<Flex gap={2}>
+						<NextLink href="/session/login">
+							<Button
+								variant="outline"
+								borderColor="accent.500"
+								color="accent.500"
+								size="md"
+								rounded="md"
+								display={{ base: "none", md: "block" }}
+								_hover={{
+									bg: "accent.200",
+								}}
+							>
+								Login
+							</Button>
+						</NextLink>
+						<NextLink href="/session/sign-up">
+							<Button
+								bg="accent.500"
+								color="white"
+								size="md"
+								rounded="md"
+								display={{ base: "none", md: "block" }}
+								_hover={{
+									bg: "accent.700",
+								}}
+							>
+								Sign Up
+							</Button>
+						</NextLink>
+					</Flex>
+				)}
 				<IconButton
 					size="md"
 					icon={isOpen ? <AiOutlineClose /> : <GiHamburgerMenu />}
