@@ -15,7 +15,6 @@ import {
 	useDisclosure,
 	useColorModeValue,
 } from "@chakra-ui/react";
-// Here we have used react-icons package for the icons
 import { GiHamburgerMenu } from "react-icons/gi";
 import { AiOutlineClose } from "react-icons/ai";
 import { BiChevronDown } from "react-icons/bi";
@@ -46,7 +45,7 @@ export default function Navbar() {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	return (
-		<Box px={4} bg={useColorModeValue("white", "gray.800")}>
+		<Box px={4} bg={useColorModeValue("white", "black")}>
 			<Flex h={16} alignItems="center" justifyContent="space-between" mx="auto">
 				<Icon as={RiFlashlightFill} h={8} w={8} />
 
@@ -65,7 +64,7 @@ export default function Navbar() {
 						<Menu autoSelect={false} isLazy>
 							{({ isOpen, onClose }) => (
 								<>
-									<MenuButton _hover={{ color: "blue.400" }}>
+									<MenuButton _hover={{ color: "accent.500" }}>
 										<Flex alignItems="center">
 											<Text>Community</Text>
 											<Icon
@@ -104,12 +103,15 @@ export default function Navbar() {
 						</Menu>
 					</HStack>
 				</HStack>
-
 				<Button
-					colorScheme="blue"
+					bg="accent.500"
+					color="white"
 					size="md"
 					rounded="md"
 					display={{ base: "none", md: "block" }}
+					_hover={{
+						bg: "accent.700",
+					}}
 				>
 					Sign in
 				</Button>
@@ -119,6 +121,7 @@ export default function Navbar() {
 					aria-label="Open Menu"
 					display={{ base: "inherit", md: "none" }}
 					onClick={isOpen ? onClose : onOpen}
+					color={useColorModeValue("black", "white")}
 				/>
 			</Flex>
 
@@ -144,7 +147,6 @@ export default function Navbar() {
 	);
 }
 
-// NavLink Component
 interface NavLinkProps {
 	name: string;
 	path: string;
@@ -158,7 +160,7 @@ const NavLink = ({ name, path, onClose }: NavLinkProps) => {
 			lineHeight="inherit"
 			_hover={{
 				textDecoration: "none",
-				color: useColorModeValue("blue.500", "blue.200"),
+				color: useColorModeValue("accent.500", "accent.700"),
 			}}
 			onClick={() => onClose()}
 		>
@@ -176,10 +178,14 @@ interface MenuLinkProps {
 
 const MenuLink = ({ name, path, onClose }: MenuLinkProps) => {
 	return (
-		<Link href={path} onClick={() => onClose()}>
+		<Link
+			href={path}
+			onClick={() => onClose()}
+			style={{ textDecoration: "none" }}
+		>
 			<MenuItem
 				_hover={{
-					color: "blue.400",
+					color: useColorModeValue("accent.500", "accent.700"),
 					bg: useColorModeValue("gray.200", "gray.700"),
 				}}
 			>
