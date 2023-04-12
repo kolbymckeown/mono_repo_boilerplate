@@ -13,6 +13,7 @@ import {
 	Link,
 	Image,
 	Flex,
+	Text,
 } from "@chakra-ui/react";
 
 interface SessionProps {
@@ -23,9 +24,16 @@ interface SessionProps {
 		verifyPassword?: string;
 		rememberMe?: boolean;
 	}) => void;
+	error?: string;
+	loading?: boolean;
 }
 
-const Session: React.FC<SessionProps> = ({ isSigningIn, onSubmit }) => {
+const Session: React.FC<SessionProps> = ({
+	isSigningIn,
+	onSubmit,
+	error,
+	loading,
+}) => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [verifyPassword, setVerifyPassword] = useState("");
@@ -119,6 +127,7 @@ const Session: React.FC<SessionProps> = ({ isSigningIn, onSubmit }) => {
 									</Link>
 								</Stack>
 							)}
+							{error && <Text>{error}</Text>}
 							<Button
 								type="submit"
 								bg="accent.500"
@@ -128,6 +137,7 @@ const Session: React.FC<SessionProps> = ({ isSigningIn, onSubmit }) => {
 								}}
 								rounded="md"
 								w="100%"
+								isLoading={loading}
 							>
 								{isSigningIn ? "Sign in" : "Create account"}
 							</Button>

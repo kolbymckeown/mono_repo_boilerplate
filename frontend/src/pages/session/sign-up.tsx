@@ -1,19 +1,44 @@
 import Session from "@/components/auth";
 import { Layout } from "@/components/layout";
-import React from "react";
+import useAuth from "@/hooks/use-auth";
+import React, { useState } from "react";
 
 const SignUp = () => {
+	const { createAccountWithEmailAndPassword } = useAuth();
+	const [error, setError] = useState<string>("");
+	const [loading, setLoading] = useState<boolean>(false);
+
 	const handleSignUpSubmit = (values: {
 		email: string;
 		password: string;
 		verifyPassword?: string;
 	}) => {
-		console.log("SignUp values:", values);
+		setLoading(true);
+		if (values.password === values.verifyPassword) {
+			createAccountWithEmailAndPassword(values.email, values.password)
+				.catch((error) => {
+					setError(error.message);
+					setLoading(false);
+				})
+				.finally(() => {
+					setLoading(false);
+				});
+		} else {
+			setError("Passwords do not match.");
+			setLoading(false);
+		}
 	};
 
 	return (
 		<Layout>
-			<Session isSigningIn={false} onSubmit={handleSignUpSubmit} />
+			<>
+				<Session
+					isSigningIn={false}
+					onSubmit={handleSignUpSubmit}
+					error={error}
+					loading={loading}
+				/>
+			</>
 		</Layout>
 	);
 };
