@@ -9,24 +9,27 @@ const SignUp = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 
 	const handleSignUpSubmit = (values: {
+		firstName?: string;
+		lastName?: string;
 		email: string;
 		password: string;
 		verifyPassword?: string;
 	}) => {
-		setLoading(true);
-		if (values.password === values.verifyPassword) {
-			createAccountWithEmailAndPassword(values.email, values.password)
-				.catch((error) => {
-					setError(error.message);
-					setLoading(false);
-				})
-				.finally(() => {
-					setLoading(false);
-				});
-		} else {
-			setError("Passwords do not match.");
-			setLoading(false);
-		}
+		console.log({ values });
+		// setLoading(true);
+		// if (values.password === values.verifyPassword) {
+		// 	createAccountWithEmailAndPassword(values.email, values.password)
+		// 		.catch((error) => {
+		// 			setError(error.message);
+		// 			setLoading(false);
+		// 		})
+		// 		.finally(() => {
+		// 			setLoading(false);
+		// 		});
+		// } else {
+		// 	setError("Passwords do not match.");
+		// 	setLoading(false);
+		// }
 	};
 
 	return (

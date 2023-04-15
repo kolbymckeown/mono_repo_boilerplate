@@ -19,6 +19,8 @@ import {
 interface SessionProps {
 	isSigningIn: boolean;
 	onSubmit: (values: {
+		firstName?: string;
+		lastName?: string;
 		email: string;
 		password: string;
 		verifyPassword?: string;
@@ -36,12 +38,16 @@ const Session: React.FC<SessionProps> = ({
 }) => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
 	const [verifyPassword, setVerifyPassword] = useState("");
 	const [rememberMe, setRememberMe] = useState(false);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		onSubmit({
+			firstName: isSigningIn ? undefined : firstName,
+			lastName: isSigningIn ? undefined : lastName,
 			email,
 			password,
 			verifyPassword: isSigningIn ? undefined : verifyPassword,
@@ -81,6 +87,30 @@ const Session: React.FC<SessionProps> = ({
 						p={{ base: 5, sm: 10 }}
 					>
 						<VStack spacing={4} w="100%">
+							<Flex
+								direction={["column", "column", "row"]}
+								w="100%"
+								justifyContent="space-between"
+							>
+								<FormControl id="firstName" w={{ base: "100%", md: "48%" }}>
+									<FormLabel>First Name</FormLabel>
+									<Input
+										rounded="md"
+										type="text"
+										value={firstName}
+										onChange={(e) => setFirstName(e.target.value)}
+									/>
+								</FormControl>
+								<FormControl id="lastName" w={{ base: "100%", md: "48%" }}>
+									<FormLabel>Last Name</FormLabel>
+									<Input
+										rounded="md"
+										type="text"
+										value={lastName}
+										onChange={(e) => setLastName(e.target.value)}
+									/>
+								</FormControl>
+							</Flex>
 							<FormControl id="email">
 								<FormLabel>Email</FormLabel>
 								<Input
