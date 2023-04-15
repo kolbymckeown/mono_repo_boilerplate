@@ -16,20 +16,25 @@ const SignUp = () => {
 		verifyPassword?: string;
 	}) => {
 		console.log({ values });
-		// setLoading(true);
-		// if (values.password === values.verifyPassword) {
-		// 	createAccountWithEmailAndPassword(values.email, values.password)
-		// 		.catch((error) => {
-		// 			setError(error.message);
-		// 			setLoading(false);
-		// 		})
-		// 		.finally(() => {
-		// 			setLoading(false);
-		// 		});
-		// } else {
-		// 	setError("Passwords do not match.");
-		// 	setLoading(false);
-		// }
+		setLoading(true);
+		if (values.password === values.verifyPassword) {
+			createAccountWithEmailAndPassword(
+				values.email,
+				values.password,
+				values.firstName,
+				values.lastName
+			)
+				.catch((error) => {
+					setError(error.message);
+					setLoading(false);
+				})
+				.finally(() => {
+					setLoading(false);
+				});
+		} else {
+			setError("Passwords do not match.");
+			setLoading(false);
+		}
 	};
 
 	return (

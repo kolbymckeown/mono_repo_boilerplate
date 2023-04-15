@@ -10,6 +10,8 @@ import {
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/slices/user.slice";
+import { dateDaysFromNow, deleteCookie, setCookie } from "@/utils/cookies";
+import { asyncRequest } from "@/api/asyncRequest";
 
 type AuthHook = {
 	signInWithEmailAndPassword: (
@@ -18,7 +20,9 @@ type AuthHook = {
 	) => Promise<void>;
 	createAccountWithEmailAndPassword: (
 		email: string,
-		password: string
+		password: string,
+		firstName: string,
+		lastName: string
 	) => Promise<void>;
 	logout: () => Promise<void>;
 };
@@ -27,19 +31,35 @@ const useAuth = (): AuthHook => {
 	const router = useRouter();
 	const dispatch = useDispatch();
 
-	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, (user) => {
-			if (user) {
-				dispatch(setUser({ email: user.email, uid: user.uid }));
-			} else {
-				dispatch(setUser({ email: null, uid: null }));
-			}
+	const authStateChanged = async (authState: any) => {
+		if (!authState) {
+			dispatch(
+				setUser({
+					email: null,
+					uid: null,
+					firstName: null,
+					lastName: null,
+				})
+			);
+			deleteCookie("current_user");
+			return;
+		}
+
+		const { user: dbUser } = await asyncRequest(`user/${authState.uid}`);
+
+		dispatch(setUser(dbUser));
+		setCookie("current_user", authState.uid, {
+			expires: dateDaysFromNow(7),
 		});
+	};
+
+	useEffect(() => {
+		const unsubscribe = auth.onAuthStateChanged(authStateChanged);
 
 		return () => {
 			unsubscribe();
 		};
-	}, [dispatch]);
+	}, []);
 
 	const signInWithEmailAndPassword = async (
 		email: string,
@@ -56,10 +76,27 @@ const useAuth = (): AuthHook => {
 
 	const createAccountWithEmailAndPassword = async (
 		email: string,
-		password: string
+		password: string,
+		firstName: string,
+		lastName: string
 	) => {
 		try {
-			await createUser(auth, email, password);
+			const { user } = await createUser(auth, email, password);
+
+			setCookie("current_user", user.uid, {
+				expires: dateDaysFromNow(7),
+			});
+
+			await asyncRequest("user", {
+				method: "POST",
+				body: {
+					uid: user.uid,
+					email: user.email,
+					firstName: firstName,
+					lastName: lastName,
+				},
+			});
+
 			router.push("/");
 		} catch (error) {
 			console.error("Error creating account with email and password", error);
