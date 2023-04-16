@@ -14,7 +14,11 @@ import {
 	Image,
 	Flex,
 	Text,
+	FormErrorMessage,
 } from "@chakra-ui/react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { loginOrRegisterSchema } from "@/utils/validations";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 interface SessionProps {
 	isSigningIn: boolean;
@@ -30,30 +34,36 @@ interface SessionProps {
 	loading?: boolean;
 }
 
+type FormData = {
+	firstName?: string;
+	lastName?: string;
+	email: string;
+	password: string;
+	verifyPassword?: string;
+	rememberMe?: boolean;
+};
+
 const Session: React.FC<SessionProps> = ({
 	isSigningIn,
 	onSubmit,
 	error,
 	loading,
 }) => {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [firstName, setFirstName] = useState("");
-	const [lastName, setLastName] = useState("");
-	const [verifyPassword, setVerifyPassword] = useState("");
-	const [rememberMe, setRememberMe] = useState(false);
+	const {
+		register,
+		handleSubmit,
+		watch,
+		formState: { errors },
+	} = useForm<FormData>({
+		resolver: yupResolver(loginOrRegisterSchema),
+		context: { isSigningIn },
+	});
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		onSubmit({
-			firstName: isSigningIn ? undefined : firstName,
-			lastName: isSigningIn ? undefined : lastName,
-			email,
-			password,
-			verifyPassword: isSigningIn ? undefined : verifyPassword,
-			rememberMe: isSigningIn ? rememberMe : undefined,
-		});
+	const onSubmitForm: SubmitHandler<FormData> = (data) => {
+		onSubmit(data);
 	};
+
+	console.log({ errors });
 
 	return (
 		<Stack
@@ -77,7 +87,7 @@ const Session: React.FC<SessionProps> = ({
 					</Stack>
 					<VStack
 						as="form"
-						onSubmit={handleSubmit}
+						onSubmit={handleSubmit(onSubmitForm)}
 						spacing={8}
 						boxSize={{ base: "xs", sm: "sm", md: "md" }}
 						h="max-content !important"
@@ -93,53 +103,70 @@ const Session: React.FC<SessionProps> = ({
 									w="100%"
 									justifyContent="space-between"
 								>
-									<FormControl id="firstName" w={{ base: "100%", md: "48%" }}>
+									<FormControl
+										id="firstName"
+										w={{ base: "100%", md: "48%" }}
+										isInvalid={!!errors.firstName}
+									>
 										<FormLabel>First Name</FormLabel>
 										<Input
 											rounded="md"
 											type="text"
-											value={firstName}
-											onChange={(e) => setFirstName(e.target.value)}
+											{...register("firstName", { required: !isSigningIn })}
 										/>
+										<FormErrorMessage>
+											{errors.firstName?.message}
+										</FormErrorMessage>
 									</FormControl>
-									<FormControl id="lastName" w={{ base: "100%", md: "48%" }}>
+									<FormControl
+										id="lastName"
+										w={{ base: "100%", md: "48%" }}
+										isInvalid={!!errors.lastName}
+									>
 										<FormLabel>Last Name</FormLabel>
 										<Input
 											rounded="md"
 											type="text"
-											value={lastName}
-											onChange={(e) => setLastName(e.target.value)}
+											{...register("lastName", { required: !isSigningIn })}
 										/>
+										<FormErrorMessage>
+											{errors.lastName?.message}
+										</FormErrorMessage>
 									</FormControl>
 								</Flex>
 							)}
-							<FormControl id="email">
+							<FormControl id="email" isInvalid={!!errors.email}>
 								<FormLabel>Email</FormLabel>
 								<Input
 									rounded="md"
 									type="email"
-									value={email}
-									onChange={(e) => setEmail(e.target.value)}
+									{...register("email", { required: true })}
 								/>
+								<FormErrorMessage>{errors.email?.message}</FormErrorMessage>
 							</FormControl>
-							<FormControl id="password">
+							<FormControl id="password" isInvalid={!!errors.password}>
 								<FormLabel>Password</FormLabel>
 								<Input
 									rounded="md"
 									type="password"
-									value={password}
-									onChange={(e) => setPassword(e.target.value)}
+									{...register("password", { required: true })}
 								/>
+								<FormErrorMessage>{errors.password?.message}</FormErrorMessage>
 							</FormControl>
 							{!isSigningIn && (
-								<FormControl id="verifyPassword">
+								<FormControl
+									id="verifyPassword"
+									isInvalid={!!errors.verifyPassword}
+								>
 									<FormLabel>Verify Password</FormLabel>
 									<Input
 										rounded="md"
 										type="password"
-										value={verifyPassword}
-										onChange={(e) => setVerifyPassword(e.target.value)}
+										{...register("verifyPassword", { required: !isSigningIn })}
 									/>
+									<FormErrorMessage>
+										{errors.verifyPassword?.message}
+									</FormErrorMessage>
 								</FormControl>
 							)}
 						</VStack>
@@ -149,8 +176,7 @@ const Session: React.FC<SessionProps> = ({
 									<Checkbox
 										colorScheme="accent"
 										size="md"
-										isChecked={rememberMe}
-										onChange={(e) => setRememberMe(!rememberMe)}
+										{...register("rememberMe")}
 									>
 										Remember me
 									</Checkbox>

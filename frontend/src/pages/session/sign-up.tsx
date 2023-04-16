@@ -15,15 +15,16 @@ const SignUp = () => {
 		password: string;
 		verifyPassword?: string;
 	}) => {
-		console.log({ values });
 		setLoading(true);
-		if (values.password === values.verifyPassword) {
-			createAccountWithEmailAndPassword(
-				values.email,
-				values.password,
-				values.firstName,
-				values.lastName
-			)
+		const {
+			firstName = "",
+			lastName = "",
+			email,
+			password,
+			verifyPassword,
+		} = values;
+		if (password === verifyPassword) {
+			createAccountWithEmailAndPassword(email, password, firstName, lastName)
 				.catch((error) => {
 					setError(error.message);
 					setLoading(false);
@@ -32,7 +33,6 @@ const SignUp = () => {
 					setLoading(false);
 				});
 		} else {
-			setError("Passwords do not match.");
 			setLoading(false);
 		}
 	};
