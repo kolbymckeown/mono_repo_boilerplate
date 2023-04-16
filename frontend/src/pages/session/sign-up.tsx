@@ -1,54 +1,54 @@
-import Session from "@/components/auth";
-import { Layout } from "@/components/layout";
-import useAuth from "@/hooks/use-auth";
-import React, { useState } from "react";
+import { useState } from 'react';
+
+import Session from '@/components/auth';
+import { Layout } from '@/components/layout';
+import useAuth from '@/hooks/use-auth';
 
 const SignUp = () => {
-	const { createAccountWithEmailAndPassword } = useAuth();
-	const [error, setError] = useState<string>("");
-	const [loading, setLoading] = useState<boolean>(false);
+  const { createAccountWithEmailAndPassword } = useAuth();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-	const handleSignUpSubmit = (values: {
-		firstName?: string;
-		lastName?: string;
-		email: string;
-		password: string;
-		verifyPassword?: string;
-	}) => {
-		setLoading(true);
-		const {
-			firstName = "",
-			lastName = "",
-			email,
-			password,
-			verifyPassword,
-		} = values;
-		if (password === verifyPassword) {
-			createAccountWithEmailAndPassword(email, password, firstName, lastName)
-				.catch((error) => {
-					setError(error.message);
-					setLoading(false);
-				})
-				.finally(() => {
-					setLoading(false);
-				});
-		} else {
-			setLoading(false);
-		}
-	};
+  const handleSignUpSubmit = (values: {
+    firstName?: string;
+    lastName?: string;
+    email: string;
+    password: string;
+    verifyPassword?: string;
+  }) => {
+    setLoading(true);
+    const {
+      firstName = '',
+      lastName = '',
+      email,
+      password,
+      verifyPassword,
+    } = values;
 
-	return (
-		<Layout>
-			<>
-				<Session
-					isSigningIn={false}
-					onSubmit={handleSignUpSubmit}
-					error={error}
-					loading={loading}
-				/>
-			</>
-		</Layout>
-	);
+    if (password === verifyPassword) {
+      createAccountWithEmailAndPassword(email, password, firstName, lastName)
+        .catch((error) => {
+          setError(error.message);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setError('Passwords do not match');
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Layout>
+      <Session
+        isSigningIn={false}
+        onSubmit={handleSignUpSubmit}
+        error={error}
+        loading={loading}
+      />
+    </Layout>
+  );
 };
 
 export default SignUp;
