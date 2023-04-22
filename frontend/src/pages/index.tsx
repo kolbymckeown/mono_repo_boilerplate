@@ -1,13 +1,10 @@
-import { Layout } from "@/components/layout";
-import { useTranslations } from "@/hooks/use-translations";
+import HomeHeroSection from '@/components/heros/home-hero';
+import { Layout } from '@/components/layout';
 
 export default function Home() {
-	const { t } = useTranslations();
-
-	return (
-		<Layout>
-			<span>{t("test")}</span>
-			<div>hello</div>
-		</Layout>
-	);
+  return (
+    <Layout>
+      <HomeHeroSection />
+    </Layout>
+  );
 }

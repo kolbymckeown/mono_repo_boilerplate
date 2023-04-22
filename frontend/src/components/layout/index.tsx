@@ -10,7 +10,6 @@ type ILayoutProps = {
 	seoTranslationVariables?: Record<string, string>;
 	plainTitle?: string;
 	plainDescription?: string;
-	verticalPadding?: boolean;
 };
 
 export const Layout = ({
@@ -19,7 +18,6 @@ export const Layout = ({
 	seoTranslationVariables,
 	plainTitle,
 	plainDescription,
-	verticalPadding = true,
 }: ILayoutProps) => {
 	const { t } = useTranslations();
 	const fullPageTitle = `Mono Repo | ${
